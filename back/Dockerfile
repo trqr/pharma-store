@@ -30,6 +30,7 @@ COPY . .
 
 RUN composer dump-autoload --optimize
 
+RUN mkdir -p var/cache var/log var/share
 RUN chown -R www-data:www-data var
 
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
