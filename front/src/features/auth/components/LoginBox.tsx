@@ -10,7 +10,6 @@ import Button from "@mui/material/Button";
 import {useAuth} from "../contexts/AuthContext.tsx";
 import {type ApiError} from "../../../api/axios.type.ts";
 import type {AxiosError} from "axios";
-import {register} from "../api/auth.api.ts";
 
 export type ValidationErrors = {
     email?: string,
@@ -59,7 +58,7 @@ const LoginBox = () => {
             }
         } catch (e) {
             const error = e as AxiosError<ApiError>;
-            setServerError(error.detail)
+            setServerError(error.response?.data.detail ?? "Une erreur est survenue")
         }
     }
 
@@ -72,7 +71,7 @@ const LoginBox = () => {
             }
         } catch (e) {
             const error = e as AxiosError<ApiError>;
-            setServerError(error.detail)
+            setServerError(error.response?.data.detail ?? "Une erreur est survenue")
         }
     }
 

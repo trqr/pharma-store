@@ -131,7 +131,7 @@ const ProductTable = () => {
                     shape="rounded"
                     count={paginatedResponse.pagination.pages}
                     page={page}
-                    onChange={(e, value) => setPage(value)}
+                    onChange={(_, value) => setPage(value)}
                 ></Pagination>
                 <Select
                     size={"small"}
@@ -159,7 +159,7 @@ const ProductTable = () => {
                     shape="rounded"
                     count={paginatedResponse.pagination.pages}
                     page={page}
-                    onChange={(e, value) => setPage(value)}
+                    onChange={(_, value) => setPage(value)}
                 ></Pagination>
             </Stack>
 

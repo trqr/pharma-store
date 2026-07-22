@@ -16,6 +16,8 @@ import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
 import {orderPayment} from "../api/orders.api.ts";
 import {useOrder} from "../contexts/OrderContext.tsx";
+import type {AxiosError} from "axios";
+import type {ApiError} from "../../../api/axios.type.ts";
 
 type PaymentMethod = "card" | "bank_transfer" | "cash";
 
@@ -51,8 +53,9 @@ const PaymentDetails = () => {
                         paymentAmount: newOrder.totalPrice
                     })
                 setSuccess(response.success);
-            } catch (error) {
-                setError(error.error);
+            } catch (e) {
+                const error = e as AxiosError<ApiError>;
+                setError(error.response?.data.detail ?? "Le paiement a echoue");
                 setProcessing(false);
                 return;
             }

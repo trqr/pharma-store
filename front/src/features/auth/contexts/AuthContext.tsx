@@ -4,7 +4,6 @@ import type {LoginRequest} from '../types/LoginRequest';
 import type {RegisterRequest} from '../types/RegisterRequest';
 import {useCart} from "../../cart/contexts/CartContext.tsx";
 import type {AuthResponse, User} from "../types/AuthResponse.ts";
-import {useNavigate} from "react-router-dom";
 
 interface AuthContextType {
     user: User | null;

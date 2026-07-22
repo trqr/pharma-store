@@ -1,4 +1,4 @@
-import {createContext, type ReactNode, startTransition, useContext, useEffect, useState, useTransition} from "react";
+import {createContext, type ReactNode, useContext, useEffect, useState, useTransition} from "react";
 import type {CartItem} from "../types/cart.type.ts";
 import {addToCart, removeFromCart} from "../api/cart.api.ts";
 import type {Product} from "../../products/types/product.type.ts";
@@ -20,7 +20,7 @@ export const CartProvider = ({children}: { children: ReactNode }) => {
     const [cart, setCart] = useState<CartItem[]>([]);
     const [totalQuantity, setTotalQuantity] = useState<number>(0);
     const [totalPrice, setTotalPrice] = useState<number>(0);
-    const [isPending, startTransition] = useTransition();
+    const [, startTransition] = useTransition();
     const {newOrder} = useOrder();
     function getTotalQuantity() {
         let total = 0;
