@@ -1,0 +1,7 @@
+var/
+vendor/
+.git/
+.idea/
+.env
+.env.*
+!.env.test

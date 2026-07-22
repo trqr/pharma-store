@@ -1,0 +1,9 @@
+ARG PHP_IMAGE=pharma-php:latest
+FROM ${PHP_IMAGE} AS app
+
+FROM nginx:alpine
+
+COPY --from=app /var/www /var/www
+COPY nginx/default.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
