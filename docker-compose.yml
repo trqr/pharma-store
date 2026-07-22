@@ -1,0 +1,89 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: pharma-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: pharma_store
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - traefik-network
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -p\"$$MYSQL_ROOT_PASSWORD\" || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  php:
+    build:
+      context: ./back
+      dockerfile: Dockerfile
+    image: pharma-php:latest
+    container_name: pharma-php
+    restart: always
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      APP_ENV: prod
+      APP_SECRET: ${APP_SECRET}
+      DATABASE_URL: mysql://root:${DB_PASSWORD}@mysql:3306/pharma_store?serverVersion=8.0.32&charset=utf8mb4
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION: ${JWT_EXPIRATION:-3600}
+      SYMFONY_TRUSTED_PROXIES: ${TRUSTED_PROXIES:-REMOTE_ADDR}
+      SYMFONY_TRUSTED_HOSTS: ${TRUSTED_HOSTS:-pharma.trqr.fr}
+    networks:
+      - traefik-network
+
+  nginx-api:
+    build:
+      context: ./back
+      dockerfile: Dockerfile.nginx
+      args:
+        PHP_IMAGE: pharma-php:latest
+    container_name: pharma-nginx-api
+    restart: always
+    expose:
+      - "80"
+    depends_on:
+      - php
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.pharma-api.rule=Host(`pharma.trqr.fr`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.pharma-api.priority=100"
+      - "traefik.http.routers.pharma-api.entrypoints=websecure"
+      - "traefik.http.routers.pharma-api.tls=true"
+      - "traefik.http.routers.pharma-api.tls.certresolver=le"
+      - "traefik.http.services.pharma-api.loadbalancer.server.port=80"
+    networks:
+      - traefik-network
+
+  front:
+    build:
+      context: ./front
+      args:
+        VITE_API_URL: /api
+    container_name: pharma-front
+    restart: always
+    expose:
+      - "80"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.pharma-front.rule=Host(`pharma.trqr.fr`)"
+      - "traefik.http.routers.pharma-front.entrypoints=websecure"
+      - "traefik.http.routers.pharma-front.tls=true"
+      - "traefik.http.routers.pharma-front.tls.certresolver=le"
+      - "traefik.http.services.pharma-front.loadbalancer.server.port=80"
+    networks:
+      - traefik-network
+
+volumes:
+  mysql_data:
+
+networks:
+  traefik-network:
+    external: true
+    name: traefik-network
