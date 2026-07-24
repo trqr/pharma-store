@@ -85,8 +85,23 @@ class LoadPhpFixturesCommand extends Command
         $warehouses = $this->entityManager->getRepository(Warehouse::class)->findAll();
 
         if (empty($warehouses)) {
-            $io->warning('Aucun entrepôt trouvé en base.');
-            return Command::FAILURE;
+            $io->info('Aucun entrepôt trouvé, création des entrepôts par défaut...');
+            $defaultWarehouses = [
+                'Entrepôt Principal Paris',
+                'Entrepôt Lyon',
+                'Entrepôt Marseille',
+                'Entrepôt Bordeaux',
+            ];
+
+            foreach ($defaultWarehouses as $name) {
+                $warehouse = new Warehouse();
+                $warehouse->setName($name);
+                $this->entityManager->persist($warehouse);
+                $warehouses[] = $warehouse;
+            }
+
+            $this->entityManager->flush();
+            $io->success(sprintf('%d entrepôts créés', count($warehouses)));
         }
 
         $stockCount = 0;

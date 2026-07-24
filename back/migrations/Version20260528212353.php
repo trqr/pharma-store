@@ -19,8 +19,8 @@ final class Version20260528212353 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('DROP TABLE sql_fixtures_executed');
+        // Table may never have existed on a fresh database
+        $this->addSql('DROP TABLE IF EXISTS sql_fixtures_executed');
         $this->addSql('ALTER TABLE medicine_reference ADD product_id INT DEFAULT NULL');
         $this->addSql('ALTER TABLE medicine_reference ADD CONSTRAINT FK_B4839FA84584665A FOREIGN KEY (product_id) REFERENCES pharmacy_product (id)');
         $this->addSql('CREATE UNIQUE INDEX UNIQ_B4839FA84584665A ON medicine_reference (product_id)');

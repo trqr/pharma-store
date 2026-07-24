@@ -16,6 +16,9 @@ done
 echo "Running migrations..."
 php bin/console doctrine:migrations:migrate --no-interaction --env=prod
 
+echo "Seeding database (first launch only)..."
+php bin/console app:seed-database --env=prod --no-interaction
+
 echo "Warming cache..."
 php bin/console cache:clear --env=prod --no-warmup
 php bin/console cache:warmup --env=prod
