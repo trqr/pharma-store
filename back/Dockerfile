@@ -28,6 +28,9 @@ RUN composer install --no-dev --optimize-autoloader --no-scripts
 
 COPY . .
 
+# Symfony Runtime always loads .env; secrets come from Portainer/container env (they take precedence).
+RUN printf '%s\n' 'APP_ENV=prod' 'APP_DEBUG=0' > .env
+
 RUN composer dump-autoload --optimize
 
 RUN mkdir -p var/cache var/log var/share
