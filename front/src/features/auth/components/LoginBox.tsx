@@ -10,6 +10,7 @@ import Button from "@mui/material/Button";
 import {useAuth} from "../contexts/AuthContext.tsx";
 import {type ApiError} from "../../../api/axios.type.ts";
 import type {AxiosError} from "axios";
+import pharmaLoginImage from "../../../assets/pharma_login_page.png";
 
 export type ValidationErrors = {
     email?: string,
@@ -149,7 +150,7 @@ const LoginBox = () => {
                     </Stack>
                     <Box
                         component={"img"}
-                        src={"../src/assets/pharma_login_page.png"}
+                        src={pharmaLoginImage}
                         alt={"Pharma Login Image"}
                         sx={{
                             width: 400, height: 400, bgcolor: "background.paper",

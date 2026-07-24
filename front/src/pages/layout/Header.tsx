@@ -10,6 +10,8 @@ import {useAuth} from "../../features/auth/contexts/AuthContext.tsx";
 import {useNavigate} from "react-router-dom";
 import CartList from "../../features/cart/components/CartList.tsx";
 import {useColorScheme} from "@mui/material/styles";
+import medicineLogo from "../../assets/medicine.png";
+import pharmacyLogo from "../../assets/pharmacy.png";
 
 
 const pages = ['Products', 'Pricing', 'Blog'];
@@ -44,7 +46,7 @@ const Header = () => {
         <Toolbar disableGutters sx={{mt: 2, mb: 5}}>
             <Box
                 component="img"
-                src={mode === "light" ? "../src/assets/medicine.png" : "../src/assets/pharmacy.png"}
+                src={mode === "light" ? medicineLogo : pharmacyLogo}
                 alt="Logo"
                 onClick={() => navigate("/")}
                 sx={{
