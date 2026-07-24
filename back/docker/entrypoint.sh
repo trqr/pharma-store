@@ -20,6 +20,11 @@ echo "Warming cache..."
 php bin/console cache:clear --env=prod --no-warmup
 php bin/console cache:warmup --env=prod
 
+# php-fpm runs as www-data; cache warmed above as root must be writable
+mkdir -p var/cache var/log var/share
+chown -R www-data:www-data var
+chmod -R ug+rwX var
+
 # Seed in background so php-fpm can accept traffic immediately
 echo "Seeding database in background (first launch only)..."
 php bin/console app:seed-database --env=prod --no-interaction &

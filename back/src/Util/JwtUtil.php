@@ -8,10 +8,19 @@ use Firebase\JWT\Key;
 
 class JwtUtil
 {
+    private const MIN_SECRET_LENGTH = 32;
+
     public function __construct(
         private readonly string $jwtSecret,
         private readonly int $jwtExpiration,
     ) {
+        if (\strlen($this->jwtSecret) < self::MIN_SECRET_LENGTH) {
+            throw new \InvalidArgumentException(sprintf(
+                'JWT_SECRET must be at least %d characters for HS256 (got %d). Generate one with: openssl rand -base64 32',
+                self::MIN_SECRET_LENGTH,
+                \strlen($this->jwtSecret)
+            ));
+        }
     }
 
     public function generate(User $user): string
