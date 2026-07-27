@@ -9,7 +9,6 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import {useAuth} from "../contexts/AuthContext.tsx";
 import {type ApiError} from "../../../api/axios.type.ts";
-import type {AxiosError} from "axios";
 import pharmaLoginImage from "../../../assets/pharma_login_page.png";
 
 export type ValidationErrors = {
@@ -58,8 +57,8 @@ const LoginBox = () => {
                 navigate("/")
             }
         } catch (e) {
-            const error = e as AxiosError<ApiError>;
-            setServerError(error.response?.data.detail ?? "Une erreur est survenue")
+            const error = e as ApiError;
+            setServerError(error.detail ?? "Une erreur est survenue")
         }
     }
 
@@ -71,8 +70,8 @@ const LoginBox = () => {
                 navigate("/")
             }
         } catch (e) {
-            const error = e as AxiosError<ApiError>;
-            setServerError(error.response?.data.detail ?? "Une erreur est survenue")
+            const error = e as ApiError;
+            setServerError(error.detail ?? "Une erreur est survenue")
         }
     }
 
@@ -124,7 +123,6 @@ const LoginBox = () => {
                                 noValidate
                                 onSubmit={(e) => {
                                     e.preventDefault();
-                                    void handleLogin();
                                 }}
                                 sx={{display: "flex", flexDirection: "column", gap: 2, width: 460, mx: "auto"}}
                             >
