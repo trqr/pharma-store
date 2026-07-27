@@ -3,13 +3,13 @@ import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-import Chip from "@mui/material/Chip";
 import type {Product} from "../types/product.type";
 import CardContent from "@mui/material/CardContent";
 import Stack from "@mui/material/Stack";
 import {getProductIcon} from "../utils/productIcon.ts";
 import {useCart} from "../../cart/contexts/CartContext.tsx";
 import {AddShoppingCart} from "@mui/icons-material";
+import {Chip} from "@mui/material";
 
 type ProductCardProps = {
     product: Product;
@@ -82,8 +82,9 @@ const ProductCard = ({product}: ProductCardProps) => {
                             <Button
                                 variant={"contained"}
                                 size="medium"
+                                sx={{gap: 1}}
                                 onClick={() => addItem(product, 1)}
-                            >Ajouter au panier <AddShoppingCart sx={{ml:  1}}/></Button>
+                            >Ajouter <AddShoppingCart fontSize={"small"}/></Button>
                         </>
                         :
                         <>
