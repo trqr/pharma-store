@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/api/order')]
@@ -57,7 +58,9 @@ final class OrderController extends AbstractController
         $created = new Order();
         $itemsPrice = 0;
         $delivery = $deliveryRepository->find($deliveryTypeId);
+        if (!$delivery) { throw new NotFoundHttpException('Veuillez selectionner un mode de livraison');}
         $deliveryAddress = $addressRepository->find($deliveryAddressId);
+        if (!$deliveryAddress) { throw new NotFoundHttpException('Adresse de livraison introuvable');}
         $isPromotionCodeActive = $promoCodeRepository->findOneBy(['code' => $promoCode, 'active' => true]);
 
 

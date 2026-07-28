@@ -11,6 +11,7 @@ import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {getPromoCodeDiscount} from "../api/promo-code.api.ts";
 import Box from "@mui/material/Box";
+import type {ApiError} from "../../../api/axios.type.ts";
 
 const OrderSummary = () => {
     const {cart, totalPrice} = useCart();
@@ -45,8 +46,9 @@ const OrderSummary = () => {
             setNewOrder({...newOrder, id: res.id, totalPrice: res.total});
             navigate("/payment");
         } catch (error) {
-            console.error(error);
-            setErrorMsg("Une erreur est survenue lors de la création de votre commande");
+            const e = error as ApiError;
+            console.error(e);
+            setErrorMsg(e.detail ?? "Une erreur est survenue lors de la création de votre commande");
         }
     }
 
