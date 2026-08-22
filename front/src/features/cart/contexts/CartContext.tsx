@@ -3,6 +3,7 @@ import type {CartItem} from "../types/cart.type.ts";
 import {addToCart, removeFromCart} from "../api/cart.api.ts";
 import type {Product} from "../../products/types/product.type.ts";
 import {useOrder} from "../../order/contexts/OrderContext.tsx";
+import {toast} from "react-toastify";
 
 type CartContextType = {
     cart: CartItem[],
@@ -49,16 +50,19 @@ export const CartProvider = ({children}: { children: ReactNode }) => {
                 ...prev,
                 res.item
             ]);
+            toast.success(res.message)
         }
         catch (e) {
             console.error(e);
+            toast.error(e.message)
         }
     }
 
     async function removeItem(id: number) {
         try {
-            await removeFromCart(id);
+            const res = await removeFromCart(id);
             setCart(prevCart => prevCart.filter(item => item.id !== id));
+            toast.success(res.message)
         }
         catch (e) {
             console.error(e);
