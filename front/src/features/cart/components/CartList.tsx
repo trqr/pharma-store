@@ -71,7 +71,7 @@ const CartList = () => {
                                                 </IconButton>
                                             }
                                         >
-                                            <Icon fontSize={"medium"} color="primary" sx={{mr: 1}}/>
+                                            <Icon fontSize={"medium"} color="info" sx={{mr: 1}}/>
                                             <ListItemText primary={item.product.name}
                                                           secondary={`Qté: ${item.quantity} - Prix: ${(item.product.promotionPrice ?? item.product.price ?? 0) * item.quantity} €`}
                                             />
