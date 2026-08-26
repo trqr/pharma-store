@@ -77,17 +77,21 @@ const ProductCard = ({product}: ProductCardProps) => {
                             </>
                     }
                 </Stack>
-                <CardActions sx={{mt: "auto", p: 2, justifyContent: "space-between"}}>
+                <CardActions sx={{mt: "auto", gap: 1, p: 2, justifyContent: "flex-end"}}>
                     {product.quantity! > 0 ?
                         <>
                             {product.quantity! < 10 &&
                             <Chip variant={"outlined"} size={"small"} color={"warning"} label={`Plus que ${product.quantity} disponible`}></Chip>
                             }
                             <TextField
+                                sx={{width: "35%"}}
                                 size={"small"}
+                                variant={"outlined"}
                                 label={"Quantité"}
                                 type={"number"}
                                 value={quantity}
+                                error={quantity<0}
+                                helperText={quantity<0 ? "Doit être positif" : ""}
                                 onChange={(event) => setQuantity(Number(event.target.value))}
                             />
                             <Button
@@ -95,7 +99,8 @@ const ProductCard = ({product}: ProductCardProps) => {
                                 size="medium"
                                 sx={{gap: 1}}
                                 onClick={() => addItem(product, quantity)}
-                            >Ajouter <AddShoppingCart fontSize={"small"}/></Button>
+                                disabled={quantity < 1}
+                            >Ajouter {quantity} <AddShoppingCart fontSize={"small"}/></Button>
                         </>
                         :
                         <>

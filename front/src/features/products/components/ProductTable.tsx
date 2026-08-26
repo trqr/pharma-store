@@ -14,7 +14,7 @@ import ScienceIcon from "@mui/icons-material/Science";
 import Stack from "@mui/material/Stack";
 
 const ProductTable = () => {
-    const [search, setSearch] = useState<string>("")
+    const [search, setSearch] = useState<string>("doliprane")
     const [debouncedSearch, setDebouncedSearch] = useState("");
     const [medicineType, setMedicineType] = useState<string>("")
     const [page, setPage] = useState<number>(1);
