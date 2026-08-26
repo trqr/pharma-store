@@ -14,7 +14,7 @@ import Box from "@mui/material/Box";
 import type {ApiError} from "../../../api/axios.type.ts";
 
 const OrderSummary = () => {
-    const {cart, totalPrice} = useCart();
+    const {cart, totalPrice, clearCart} = useCart();
     const {newOrder, setNewOrder} = useOrder();
     const [promoCode, setPromoCode] = useState<string>("")
     const [errorMsg, setErrorMsg] = useState<string>("")
@@ -45,6 +45,7 @@ const OrderSummary = () => {
             const res = await createOrder(newOrder);
             setNewOrder({...newOrder, id: res.id, totalPrice: res.total});
             navigate("/payment");
+            clearCart();
         } catch (error) {
             const e = error as ApiError;
             console.error(e);

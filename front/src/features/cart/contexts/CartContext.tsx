@@ -71,6 +71,10 @@ export const CartProvider = ({children}: { children: ReactNode }) => {
         }
     }
 
+    function clearCart () {
+        setCart([]);
+    }
+
     useEffect(() => {
         startTransition(() => {
             getTotalQuantity();
@@ -88,7 +92,7 @@ export const CartProvider = ({children}: { children: ReactNode }) => {
                 totalPrice,
                 addItem,
                 removeItem,
-                clearCart: () => {},
+                clearCart,
             }}
         >
             {children}

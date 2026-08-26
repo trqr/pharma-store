@@ -8,7 +8,6 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-import Alert from "@mui/material/Alert";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import LocalAtmIcon from "@mui/icons-material/LocalAtm";
@@ -18,6 +17,7 @@ import {orderPayment} from "../api/orders.api.ts";
 import {useOrder} from "../contexts/OrderContext.tsx";
 import type {AxiosError} from "axios";
 import type {ApiError} from "../../../api/axios.type.ts";
+import {Alert} from "@mui/material";
 
 type PaymentMethod = "card" | "bank_transfer" | "cash";
 

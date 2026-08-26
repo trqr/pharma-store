@@ -9,13 +9,15 @@ import Stack from "@mui/material/Stack";
 import {getProductIcon} from "../utils/productIcon.ts";
 import {useCart} from "../../cart/contexts/CartContext.tsx";
 import {AddShoppingCart} from "@mui/icons-material";
-import {Chip} from "@mui/material";
+import {Chip, TextField} from "@mui/material";
+import {useState} from "react";
 
 type ProductCardProps = {
     product: Product;
 };
 
 const ProductCard = ({product}: ProductCardProps) => {
+    const [quantity, setQuantity] = useState<number>(1)
     const {addItem} = useCart();
 
     const Icon = getProductIcon(product.description);
@@ -78,18 +80,27 @@ const ProductCard = ({product}: ProductCardProps) => {
                 <CardActions sx={{mt: "auto", p: 2, justifyContent: "space-between"}}>
                     {product.quantity! > 0 ?
                         <>
-                            <Chip variant={"outlined"} size={"small"} label={`Stock restant: ${product.quantity ?? 0}`}></Chip>
+                            {product.quantity! < 10 &&
+                            <Chip variant={"outlined"} size={"small"} color={"warning"} label={`Plus que ${product.quantity} disponible`}></Chip>
+                            }
+                            <TextField
+                                size={"small"}
+                                label={"Quantité"}
+                                type={"number"}
+                                value={quantity}
+                                onChange={(event) => setQuantity(Number(event.target.value))}
+                            />
                             <Button
                                 variant={"contained"}
                                 size="medium"
                                 sx={{gap: 1}}
-                                onClick={() => addItem(product, 1)}
+                                onClick={() => addItem(product, quantity)}
                             >Ajouter <AddShoppingCart fontSize={"small"}/></Button>
                         </>
                         :
                         <>
-                            <Chip variant={"outlined"} size={"small"} color={"error"} label={`Stock restant: ${product.quantity ?? 0}`}></Chip>
-                            <Button variant={"outlined"} color={"secondary"} size="small">Me notifier</Button>
+                            <Chip variant={"outlined"} size={"small"} color={"error"} label={`En rupture`}></Chip>
+                            <Button variant={"text"} color={"secondary"} size="small">Me notifier le réassort</Button>
                         </>
                     }
 
