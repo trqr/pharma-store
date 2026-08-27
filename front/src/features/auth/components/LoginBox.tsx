@@ -87,7 +87,8 @@ const LoginBox = () => {
                         alignItems: "center",
                         border: "1px solid black",
                         borderColor: "primary.main",
-                        overflow: "hidden",
+                        overflow: "hidden", borderRadius: 1
+
                     }}>
                     <Stack
                         sx={{
