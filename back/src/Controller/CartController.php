@@ -7,6 +7,8 @@ use App\Entity\PharmacyProduct;
 use App\Mapper\CartMapper;
 use App\Repository\CartItemRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Event\Telemetry\System;
+use SebastianBergmann\Environment\Console;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -24,10 +26,8 @@ final class CartController extends AbstractController
     #[Route('', name: 'app_cart_items', methods: 'GET')]
     public function getCartItems(): JsonResponse
     {
-        $cartItems = $this->getUser()->getCartItems();
-        $notOrderedItems = $cartItems->filter(fn(CartItem $item) => $item->getPurchase() === null);
-
-        $dto = $this->mapper->entityToCartDto($notOrderedItems);
+        $cartItems = $this->getUser()->getCartItems()->filter(fn(CartItem $item) => $item->getPurchase() === null);
+        $dto = $this->mapper->entityToCartDto($cartItems);
 
         return $this->json($dto);
     }
@@ -36,6 +36,24 @@ final class CartController extends AbstractController
     public function addToCart(Request $request, PharmacyProduct $product) : JsonResponse
     {
         $quantity = $request->query->get('quantity') ?? 1;
+        $totalStock = [];
+        $highestStock = 0;
+        $stocks = $product->getStocks();
+
+        foreach ($stocks as $stock) {
+
+            $warehouseStock = $stock->getStock();
+
+            if ($warehouseStock > $highestStock) {
+                $highestStock = $warehouseStock;
+            }
+
+            $totalStock[] = $warehouseStock;
+        }
+
+        if ($highestStock < $quantity) {
+            throw new \Exception('Pas assez de stock disponible dans nos entrepots');
+        }
 
         $created = new CartItem();
         $created->setUser($this->getUser());
@@ -47,7 +65,8 @@ final class CartController extends AbstractController
 
         return $this->json([
             'message' => 'Item added to cart',
-            'item' => $this->mapper->entityToItemDto($created)
+            'item' => $this->mapper->entityToItemDto($created),
+            'totalStock' => $totalStock
         ]);
     }
 

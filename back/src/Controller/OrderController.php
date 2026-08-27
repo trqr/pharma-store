@@ -67,13 +67,24 @@ final class OrderController extends AbstractController
         foreach ($itemIds as $itemId) {
             $cartItem = $cartItemRepository->find($itemId);
 
-            if ($cartItem->getPurchase()) { throw new \Exception('Item already in order');}
-            if ($cartItem->getUser() !== $this->getUser()) { throw new BadRequestHttpException('Unauthorized');}
+            $stocks = $cartItem->getProduct()->getStocks();
+
+            // je vérifit si le stock est suffisant dans au moins un entrepot.
+            if (!$stocks->filter(fn($warehouseStock) => $warehouseStock->getStock() >= $cartItem->getQuantity())) {
+                throw new \Exception('Pas assez de stock dans nos entrepots');
+            }
+
+            $updatedStock = $stocks->filter(fn($warehouseStock) => $warehouseStock->getStock() >= $cartItem->getQuantity())->first();
+            $updatedStock->setStock($updatedStock->getStock() - $cartItem->getQuantity());
+
+            if ($cartItem->getPurchase()) { throw new \Exception('Le produit est déja dans une commande');}
+            if ($cartItem->getUser() !== $this->getUser()) { throw new BadRequestHttpException('Non autorisé');}
 
             $created->addItem($cartItem);
 
             $cartItem->setPurchase($created);
             $entityManager->persist($cartItem);
+            $entityManager->persist($updatedStock);
 
             $itemsPrice += $cartItem->getProduct()->getPromotionPrice() ?? $cartItem->getProduct()->getPrice() ?? 0 * $cartItem->getQuantity();
         }
@@ -129,7 +140,7 @@ final class OrderController extends AbstractController
             ], 403);
         }
 
-        if ($order->getStatus() != 'pending')
+        if ($order->getStatus() == 'paid')
         {
             return $this->json([
                 'error' => 'Order already paid',

@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
+use function PHPSTORM_META\map;
 
 #[Route('/api/users')]
 final class UserController extends AbstractController
@@ -41,7 +42,7 @@ final class UserController extends AbstractController
     {
         $user = $this->getUser();
 
-        $addresses = $addressRepo->findBy(['user' => $user]);
+        $addresses = $addressRepo->findBy(['user' => $user], limit: 6);
 
         $outputDto = array_map(fn(CustomerAddress $address) =>
             $this->customerAddressMapper->entityToDto($address), $addresses);

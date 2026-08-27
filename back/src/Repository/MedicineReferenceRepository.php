@@ -21,7 +21,7 @@ class MedicineReferenceRepository extends ServiceEntityRepository
         $offset = ($page - 1) * $limit;
 
         $queryBuilder =  $this->createQueryBuilder('product')
-            ->orderBy('product.id', 'DESC')
+            ->orderBy('product.id', 'ASC')
             ->setFirstResult($offset)
             ->setMaxResults($limit);
 

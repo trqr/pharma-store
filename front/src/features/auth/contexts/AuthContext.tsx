@@ -29,7 +29,6 @@ export const AuthProvider = ({children}: { children: ReactNode }) => {
             setCart(response.user.cartItems);
             return response;
         } catch (e) {
-            localStorage.removeItem('token');
             setUser(null);
             return e;
         }
