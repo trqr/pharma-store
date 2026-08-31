@@ -16,7 +16,12 @@ class MedicineReferenceRepository extends ServiceEntityRepository
         parent::__construct($registry, MedicineReference::class);
     }
 
-    public function findAllPaginated(int $page = 1, int $limit = 20, ?string $search = null): array
+    public function findAllPaginated(
+        int $page = 1,
+        int $limit = 20,
+        ?string $search = null,
+        ?string $category = null
+    ): array
     {
         $offset = ($page - 1) * $limit;
 
@@ -33,10 +38,15 @@ class MedicineReferenceRepository extends ServiceEntityRepository
                 ->setParameter('search', '%' . $search . '%');
         }
 
+        if ($category) {
+            $queryBuilder->andWhere('product.description LIKE :category')
+                ->setParameter('category', '%' . $category . '%');
+        }
+
         return $queryBuilder->getQuery()->getResult();
     }
 
-    public function countSearch(?string $search = null): int
+    public function countSearch(?string $search = null, ?string $category = null): int
     {
         $qb = $this->createQueryBuilder('product')
             ->select('COUNT(product.id)');
@@ -44,6 +54,11 @@ class MedicineReferenceRepository extends ServiceEntityRepository
         if ($search) {
             $qb->andWhere('product.name LIKE :search')
                 ->setParameter('search', '%' . $search . '%');
+        }
+
+        if ($category) {
+            $qb->andWhere('product.description LIKE :category')
+                ->setParameter('category', '%' . $category . '%');
         }
 
         return (int) $qb

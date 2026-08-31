@@ -19,17 +19,17 @@ final class ProductController extends AbstractController
     public function getMedicines(
         Request $request,
         MedicineReferenceRepository $medicineRepo,
-        PharmacyProductRepository $productRepo,
         PharmacyProductMapper $mapper
     ): JsonResponse
     {
         $page = $request->query->get('page') ?? 1;
         $limit = $request->query->get('limit') ?? 20;
         $search = $request->query->get('search');
+        $category = $request->query->get('category');
 
-        $products = $medicineRepo->findAllPaginated($page, $limit, $search);
+        $products = $medicineRepo->findAllPaginated($page, $limit, $search, $category);
 
-        $totalProducts = $medicineRepo->countSearch($search);
+        $totalProducts = $medicineRepo->countSearch($search, $category);
         $totalPages = ceil($totalProducts / $limit);
 
         $productDto = array_map(fn($med) => $mapper->mapToDto($med->getProduct(), $med), $products);

@@ -33,10 +33,11 @@ const ProductTable = () => {
 
     useEffect(() => {
         startTransition(async () => {
-            const fetchedProducts = await getProducts(page, limit, debouncedSearch);
+            const fetchedProducts = await getProducts(page, limit, debouncedSearch, medicineType);
             setPaginatedResponse(fetchedProducts);
         });
-    }, [debouncedSearch, page, limit]);
+        console.log(medicineType);
+    }, [debouncedSearch, page, limit, medicineType]);
 
 
     const pagination = (
@@ -74,9 +75,9 @@ const ProductTable = () => {
                         renderValue={(selected) => {
                             if (!selected) return <LocalPharmacyIcon/>;
                             switch (selected) {
-                                case "comprime":
+                                case "comprimé":
                                     return <MedicationIcon color="primary"/>;
-                                case "gelule":
+                                case "gélule":
                                     return <LocalPharmacyIcon color="secondary"/>;
                                 case "solution":
                                     return <VaccinesIcon color="error"/>;
@@ -95,13 +96,13 @@ const ProductTable = () => {
                             </ListItemIcon>
                             <ListItemText>Tous</ListItemText>
                         </MenuItem>
-                        <MenuItem value="comprime">
+                        <MenuItem value="comprimé">
                             <ListItemIcon>
                                 <MedicationIcon color="primary"/>
                             </ListItemIcon>
                             <ListItemText>Comprimé</ListItemText>
                         </MenuItem>
-                        <MenuItem value="gelule">
+                        <MenuItem value="gélule">
                             <ListItemIcon>
                                 <LocalPharmacyIcon color="secondary"/>
                             </ListItemIcon>
