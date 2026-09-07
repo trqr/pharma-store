@@ -1,52 +1,60 @@
-import {startTransition, useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import type {Product} from "../types/product.type";
 import ProductCard from "./ProductCard";
-import {emptyPaginedRes, type PaginatedResponse,} from "../types/paginatedResponse.type";
-import {getProducts} from "../api/product.api";
 import Grid from "@mui/material/Grid";
 import {Search} from "@mui/icons-material";
-import {IconButton, InputBase, ListItemIcon, ListItemText, MenuItem, Pagination, Paper, Select} from "@mui/material";
+import {
+    CircularProgress,
+    IconButton,
+    InputBase,
+    ListItemIcon,
+    ListItemText,
+    MenuItem,
+    Pagination,
+    Paper,
+    Select,
+    Typography,
+} from "@mui/material";
 import LocalPharmacyIcon from "@mui/icons-material/LocalPharmacy";
 import MedicationIcon from "@mui/icons-material/Medication";
 import WaterDropIcon from "@mui/icons-material/WaterDrop";
 import VaccinesIcon from "@mui/icons-material/Vaccines";
 import ScienceIcon from "@mui/icons-material/Science";
 import Stack from "@mui/material/Stack";
+import {fetchProducts, setLimit, setMedicineType, setPage, setSearch} from "../store/productsSlice";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
 const ProductTable = () => {
-    const [search, setSearch] = useState<string>("doliprane")
-    const [debouncedSearch, setDebouncedSearch] = useState("");
-    const [medicineType, setMedicineType] = useState<string>("")
-    const [page, setPage] = useState<number>(1);
-    const [limit, setLimit] = useState<number>(6)
-    const [paginatedResponse, setPaginatedResponse] =
-        useState<PaginatedResponse>(emptyPaginedRes);
+    const dispatch = useDispatch();
+
+    // Lecture du catalogue depuis Redux (plus de useState pour la liste / pagination)
+    const {items, pagination: paginationMeta, page, limit, search, medicineType, status, error} = useSelector(
+        (state) => state.products,
+    );
+
+    const [searchInput, setSearchInput] = useState<string>(search);
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            setDebouncedSearch(search);
-            setPage(1);
+            dispatch(setSearch(searchInput));
         }, 500);
 
         return () => clearTimeout(timer);
-    }, [search]);
+    }, [searchInput, dispatch]);
 
     useEffect(() => {
-        startTransition(async () => {
-            const fetchedProducts = await getProducts(page, limit, debouncedSearch, medicineType);
-            setPaginatedResponse(fetchedProducts);
-        });
-        console.log(medicineType);
-    }, [debouncedSearch, page, limit, medicineType]);
+        dispatch(fetchProducts({page, limit, search, medicineType}));
+    }, [dispatch, page, limit, search, medicineType]);
 
 
     const pagination = (
         <Pagination
             variant="text"
             shape="rounded"
-            count={paginatedResponse.pagination.pages}
+            count={paginationMeta.pages}
             page={page}
-            onChange={(_, value) => setPage(value)}
+            onChange={(_, value) => dispatch(setPage(value))}
         />
     );
 
@@ -58,7 +66,7 @@ const ProductTable = () => {
                 <Paper sx={{ display: 'flex', alignItems: 'center', width: 320, position: "absolute", left: 0}}>
                     <Select
                         value={medicineType}
-                        onChange={(e) => setMedicineType(e.target.value)}
+                        onChange={(e) => dispatch(setMedicineType(e.target.value))}
                         displayEmpty
                         variant="standard"
                         disableUnderline
@@ -131,10 +139,11 @@ const ProductTable = () => {
                         sx={{ml: 1, flex: 1}}
                         fullWidth={true}
                         placeholder={"Recherche un médicament"}
-                        onChange={(e) => setSearch(e.target.value)}
+                        value={searchInput}
+                        onChange={(e) => setSearchInput(e.target.value)}
                     />
 
-                    <IconButton onClick={() => setSearch(search)}>
+                    <IconButton onClick={() => dispatch(setSearch(searchInput))}>
                         <Search fontSize={"small"}/>
                     </IconButton>
                 </Paper>
@@ -142,10 +151,7 @@ const ProductTable = () => {
                 <Select
                     size={"small"}
                     value={limit}
-                    onChange={(e) => {
-                        setLimit(Number(e.target.value))
-                        setPage(1)
-                    }}
+                    onChange={(e) => dispatch(setLimit(Number(e.target.value)))}
                     sx={{mx: 2, position: "absolute", right: -15}}
                 >
                     <MenuItem value={6}>6</MenuItem>
@@ -155,8 +161,18 @@ const ProductTable = () => {
                 </Select>
             </Stack>
 
+            {status === "loading" && (
+                <Stack direction="row" sx={{justifyContent: "center", my: 4}}>
+                    <CircularProgress/>
+                </Stack>
+            )}
+            {status === "failed" && (
+                <Typography color="error" sx={{textAlign: "center", my: 2}}>
+                    {error}
+                </Typography>
+            )}
             <Grid container spacing={1.5}>
-                {paginatedResponse.data.map((product: Product) => (
+                {items.map((product: Product) => (
                     <Grid key={product.id} size={{xs: 6, md: 4, xl: 4}}>
                         <ProductCard product={product}/>
                     </Grid>

@@ -5,6 +5,7 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\PromoCodeRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ApiResource]
 #[ORM\Entity(repositoryClass: PromoCodeRepository::class)]
@@ -15,6 +16,7 @@ class PromoCode
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Groups(['order:read'])]
     #[ORM\Column(length: 50, unique: true)]
     private ?string $code = null;
 
@@ -28,6 +30,7 @@ class PromoCode
     {
         return $this->id;
     }
+
     public function getCode(): ?string
     {
         return $this->code;

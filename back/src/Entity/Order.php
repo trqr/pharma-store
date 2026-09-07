@@ -2,11 +2,29 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiProperty;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
 use App\Repository\OrderRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
+#[ApiResource(
+    operations: [
+        new Get(
+            uriTemplate: '/test/{id}',
+            formats: [
+                'json' => ['application/json'],
+                'jsonld' => ['application/ld+json'],
+            ],
+            normalizationContext: [
+                'groups' => ['order:read'],
+            ]
+        )
+    ]
+)]
 #[ORM\Entity(repositoryClass: OrderRepository::class)]
 #[ORM\Table(name: '`purchase`')]
 #[ORM\HasLifecycleCallbacks]
@@ -17,6 +35,7 @@ class Order
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Groups(['order:read'])]
     #[ORM\Column(length: 100)]
     private ?string $status = null;
 
@@ -24,6 +43,8 @@ class Order
     #[ORM\JoinColumn(nullable: false)]
     private ?Delivery $deliveryType = null;
 
+    #[Groups(['order:read'])]
+    #[ApiProperty(genId: false)]
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: true)]
     private ?PromoCode $promoCode = null;
@@ -31,6 +52,7 @@ class Order
     #[ORM\Column(nullable: true)]
     private ?string $deliveryAddress = null;
 
+    #[Groups(['order:read'])]
     #[ORM\Column]
     private ?float $totalPrice = null;
 
@@ -43,6 +65,8 @@ class Order
     #[ORM\OneToMany(targetEntity: CartItem::class, mappedBy: 'purchase')]
     private Collection $items;
 
+    #[Groups(['order:read'])]
+    #[ApiProperty(genId: false)]
     #[ORM\ManyToOne(inversedBy: 'purchases')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
