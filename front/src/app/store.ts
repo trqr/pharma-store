@@ -1,28 +1,20 @@
-/**
- * Point d'entrée du store Redux.
- *
- * configureStore (Redux Toolkit) :
- * - crée le store
- * - branche Redux DevTools
- * - ajoute les middlewares utiles (dont celui qui gère les createAsyncThunk)
- */
 import {configureStore} from "@reduxjs/toolkit";
+import {setupListeners} from "@reduxjs/toolkit/query";
+import {baseApi} from "../api/baseApi";
+import "../features/products/api/product.api";
 import productsReducer from "../features/products/store/productsSlice";
 
 export const store = configureStore({
-    // Chaque clé devient une branche de state.products, state.cart, etc.
     reducer: {
         products: productsReducer,
+        [baseApi.reducerPath]: baseApi.reducer,
     },
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware().concat(baseApi.middleware),
 });
 
-/**
- * Type de tout le state global.
- * Exemple : state.products.items, state.products.status
- */
+setupListeners(store.dispatch);
+
 export type RootState = ReturnType<typeof store.getState>;
 
-/**
- * Type du dispatch, pour que TypeScript connaisse nos actions et nos thunks.
- */
 export type AppDispatch = typeof store.dispatch;

@@ -21,17 +21,24 @@ import WaterDropIcon from "@mui/icons-material/WaterDrop";
 import VaccinesIcon from "@mui/icons-material/Vaccines";
 import ScienceIcon from "@mui/icons-material/Science";
 import Stack from "@mui/material/Stack";
-import {fetchProducts, setLimit, setMedicineType, setPage, setSearch} from "../store/productsSlice";
-import { useSelector } from "react-redux";
-import { useDispatch } from "react-redux";
+import {setLimit, setMedicineType, setPage, setSearch} from "../store/productsSlice";
+import {useGetProductsQuery} from "../api/product.api";
+import {useAppDispatch, useAppSelector} from "../../../app/hooks";
+import {emptyPaginedRes} from "../types/paginatedResponse.type";
 
 const ProductTable = () => {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
 
-    // Lecture du catalogue depuis Redux (plus de useState pour la liste / pagination)
-    const {items, pagination: paginationMeta, page, limit, search, medicineType, status, error} = useSelector(
-        (state) => state.products,
-    );
+    const {page, limit, search, medicineType} = useAppSelector((state) => state.products);
+    const {data, isFetching, isError} = useGetProductsQuery({
+        page,
+        limit,
+        search,
+        category: medicineType,
+    });
+
+    const items = data?.data ?? emptyPaginedRes.data;
+    const paginationMeta = data?.pagination ?? emptyPaginedRes.pagination;
 
     const [searchInput, setSearchInput] = useState<string>(search);
 
@@ -42,10 +49,6 @@ const ProductTable = () => {
 
         return () => clearTimeout(timer);
     }, [searchInput, dispatch]);
-
-    useEffect(() => {
-        dispatch(fetchProducts({page, limit, search, medicineType}));
-    }, [dispatch, page, limit, search, medicineType]);
 
 
     const pagination = (
@@ -161,14 +164,14 @@ const ProductTable = () => {
                 </Select>
             </Stack>
 
-            {status === "loading" && (
+            {isFetching && (
                 <Stack direction="row" sx={{justifyContent: "center", my: 4}}>
                     <CircularProgress/>
                 </Stack>
             )}
-            {status === "failed" && (
+            {isError && (
                 <Typography color="error" sx={{textAlign: "center", my: 2}}>
-                    {error}
+                    Impossible de charger les produits
                 </Typography>
             )}
             <Grid container spacing={1.5}>

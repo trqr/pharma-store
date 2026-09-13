@@ -1,0 +1,16 @@
+{
+  "name": "pharma-store",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Lance le front (Vite) et le back (Symfony) depuis la racine",
+  "scripts": {
+    "dev": "concurrently -k -n front,back -c cyan,magenta \"npm run front\" \"npm run back\"",
+    "dev:fixtures": "concurrently -k -n front,back -c cyan,magenta \"npm run front\" \"npm run back:fixtures\"",
+    "front": "npm run dev --prefix front",
+    "back": "composer --working-dir=back run-script serve",
+    "back:fixtures": "composer --working-dir=back run-script dev-server"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}

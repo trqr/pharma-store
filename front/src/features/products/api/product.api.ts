@@ -1,19 +1,21 @@
-import { api } from "../../../api/axios.config"
+import {baseApi} from "../../../api/baseApi";
 import type {PaginatedResponse} from "../types/paginatedResponse.type.ts";
 
-export const getProducts = async (
-    page?: number,
-    limit?: number,
-    search?: string,
-    category?: string,
-) : Promise<PaginatedResponse> => {
-    const res = await api.get("/products/medicines", {
-        params: {
-            page: page,
-            limit: limit,
-            search: search,
-            category: category
-        }
-    });
-    return res.data;
-}
+export const productsApi = baseApi.injectEndpoints({
+    endpoints: (builder) => ({
+        getProducts: builder.query<PaginatedResponse, {
+            page?: number;
+            limit?: number;
+            search?: string;
+            category?: string;
+        }>({
+            query: ({page, limit, search, category}) => ({
+                url: "/products/medicines",
+                params: {page, limit, search, category},
+            }),
+            providesTags: ["Products"],
+        }),
+    }),
+});
+
+export const {useGetProductsQuery} = productsApi;
